@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 
 const options = { env: { snapshotOnly: true } }
 
-describe('Set label on issue', options, () => {
+describe('Set milestone on issue', options, () => {
   const issue = {
     title: `issue-${faker.datatype.uuid()}`,
     description: faker.random.words(3),
@@ -12,9 +12,8 @@ describe('Set label on issue', options, () => {
     }
   }
 
-  const label = {
-    name: `label-${faker.random.word()}`,
-    color: '#ffaabb'
+  const milestone = {
+    title: `milestone-${faker.random.word()}`
   }
 
   beforeEach(() => {
@@ -22,16 +21,14 @@ describe('Set label on issue', options, () => {
     cy.login()
     cy.api_createIssue(issue)
       .then(response => {
-        cy.api_createLabel(response.body.project_id, label)
+        cy.api_createMilestone(response.body.project_id, milestone)
         cy.visit(`${Cypress.env('user_name')}/${issue.project.name}/issues/${response.body.iid}`)
       })
   })
 
   it('successfully', () => {
-    cy.gui_setLabelOnIssue(label)
+    cy.gui_setMilestoneOnIssue(milestone)
 
-    cy.get('.qa-labels-block').should('contain', label.name)
-    cy.get('.qa-labels-block span')
-      .should('have.attr', 'style', `background-color: ${label.color}; color: #333333;`)
+    cy.get('.block.milestone').should('contain', milestone.title)
   })
 })
